@@ -6,41 +6,40 @@
 int main(void)
 { 
   long int cstr = 0;
-
   long int buf;
-	unsigned	char	tx[3] = {0,0,0};
-	
-	long int a=0;
-  double Voltage_A=9.99969,Voltage_B=-9.99969;	//Êä³öµçÑ¹-10<Voltage<10
+  unsigned char tx[3] = {0,0,0};	
+  long int a=0;
+  double Voltage_A=9.99969,Voltage_B=-9.99969;	//è¾“å‡ºç”µå‹-10<Voltage<10
   unsigned int c=0;
     
 				 	
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//ÉèÖÃÏµÍ³ÖĞ¶ÏÓÅÏÈ¼¶·Ö×é2
-	delay_init(168);		//ÑÓÊ±³õÊ¼»¯ 
-	uart_init(115200);	//´®¿Ú³õÊ¼»¯²¨ÌØÂÊÎª115200
-	AD5752_Init();	//AD5752³õÊ¼»¯
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);//è®¾ç½®ç³»ç»Ÿä¸­æ–­ä¼˜å…ˆçº§åˆ†ç»„2
+	delay_init(168);		//å»¶æ—¶åˆå§‹åŒ– 
+	uart_init(115200);	//ä¸²å£åˆå§‹åŒ–æ³¢ç‰¹ç‡ä¸º115200
+	AD5752_Init();	//AD5752åˆå§‹åŒ–
 	ConfigAD5752();
+
 	while(1)
 	{
 		cstr = DAC_Register | DAC_Channel_A | 0x00FFFF;		//VoutA=9.9996v
-		WriteToAD5752Spi(&cstr);	//Ğ´¿ØÖÆ×Ö
+		WriteToAD5752Spi(&cstr);	//å†™æ§åˆ¶å­—
 
 		cstr = DAC_Register | DAC_Channel_B | 0x00AAAA;		//VoutB=3.33V
-		WriteToAD5752Spi(&cstr);	//Ğ´¿ØÖÆ×Ö
-	
-		cstr = Read | DAC_Register | DAC_Channel_B;   //¶Á³öÀ´Ó¦¸ÃÊÇ "00 AA AA"
+		WriteToAD5752Spi(&cstr);	//å†™æ§åˆ¶å­—
+
+		cstr = Read | DAC_Register | DAC_Channel_B;   //è¯»å‡ºæ¥åº”è¯¥æ˜¯ "00 AA AA"
 		WriteToAD5752Spi(&cstr);	
 
 		delay_us(20);
 
 		ReadFromAD5752Spi(&buf);	  //Read select register, using two instruction cycles 
-			
-	  tx[2] = ((buf)&0xFF0000)>>16;	
+
+		tx[2] = ((buf)&0xFF0000)>>16;	
 		tx[1] = ((buf)&0x00FF00)>>8;	
 		tx[0] = (buf)&0x000000FF;
 		if(Voltage_A>=0)
 		{
-			c=Voltage_A/10*32768;	//×ª»»³ÉµçÑ¹
+			c=Voltage_A/10*32768;	//è½¬æ¢æˆç”µå‹
 		}
 		else
 		{
@@ -50,5 +49,5 @@ int main(void)
 		cstr = DAC_Register | DAC_Channel_B | c;		
 		WriteToAD5752Spi(&cstr);		
 	}
-}
+	}
 
